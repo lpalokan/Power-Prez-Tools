@@ -4,12 +4,21 @@ import { FileSystemPort } from "../../src/cli/installer";
 export class FakeFileSystem implements FileSystemPort {
   readonly dirs = new Set<string>();
   readonly files = new Map<string, string>();
+  /** When true, mkdirp throws an OS permission error (macOS sandbox). */
+  blockMkdir = false;
 
   exists(path: string): boolean {
     return this.dirs.has(path) || this.files.has(path);
   }
 
   mkdirp(path: string): void {
+    if (this.blockMkdir) {
+      const err = new Error(
+        `EPERM: operation not permitted, mkdir '${path}'`,
+      ) as Error & { code: string };
+      err.code = "EPERM";
+      throw err;
+    }
     this.dirs.add(path);
   }
 

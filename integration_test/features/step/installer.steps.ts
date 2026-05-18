@@ -1,7 +1,12 @@
 import { Given, When, Then } from "@cucumber/cucumber";
 import * as assert from "assert";
 import { TestWorld } from "../../support/world";
-import { Installer, wefDir } from "../../../src/cli/installer";
+import {
+  Installer,
+  wefDir,
+  PermissionDeniedError,
+  fallbackStagePath,
+} from "../../../src/cli/installer";
 
 function installer(world: TestWorld): Installer {
   return new Installer(world.fakeFs, world.platform, world.home);
@@ -80,3 +85,58 @@ Then("I am told the platform is unsupported", function (this: TestWorld) {
   assert.ok(this.lastError, "expected an error");
   assert.match(this.lastError!.message, /unsupported platform/i);
 });
+
+Given("creating the add-in folder is blocked by the system", function (this: TestWorld) {
+  this.fakeFs.blockMkdir = true;
+});
+
+When(
+  /^I try to install the manifest from "(.+)"$/,
+  function (this: TestWorld, source: string) {
+    try {
+      installer(this).install(source);
+    } catch (e) {
+      this.lastError = e as Error;
+    }
+  },
+);
+
+Then("I am told it is a macOS permission restriction", function (this: TestWorld) {
+  assert.ok(this.lastError, "expected an error");
+  assert.ok(
+    this.lastError instanceof PermissionDeniedError,
+    "expected a PermissionDeniedError",
+  );
+  assert.match(this.lastError!.message, /macOS|privacy restriction/i);
+});
+
+Then(
+  /^the reported add-in folder is "(.+)"$/,
+  function (this: TestWorld, expected: string) {
+    assert.ok(this.lastError instanceof PermissionDeniedError);
+    assert.strictEqual(
+      (this.lastError as PermissionDeniedError).wefDir,
+      expected,
+    );
+  },
+);
+
+Given(
+  /^the home directory is "(.+)" and the temp directory is "(.+)"$/,
+  function (this: TestWorld, home: string, tmp: string) {
+    this.home = home;
+    this.tmpDir = tmp;
+  },
+);
+
+Given(/^Downloads (exists|is missing)$/, function (this: TestWorld, state: string) {
+  this.downloadsExists = state === "exists";
+});
+
+Then(
+  /^the manifest is staged to "(.+)"$/,
+  function (this: TestWorld, expected: string) {
+    const staged = fallbackStagePath(this.home, this.tmpDir, this.downloadsExists);
+    assert.strictEqual(staged, expected);
+  },
+);
