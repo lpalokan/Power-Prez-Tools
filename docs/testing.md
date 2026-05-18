@@ -213,6 +213,15 @@ by `cli.feature`, both using in-memory fakes. The Node adapters
 (`windowsRegistry.ts`) are the only untestable boundary, mirroring the
 Office.js seam; `main.ts` is a thin wire-up.
 
+Windows users can alternatively run a native installer
+(`installer/windows/power-prez-tools.nsi`, built by
+`tools/build-windows-installer.sh`). It performs the same file +
+registry steps the CLI does (and which the BDD suite covers), so it
+needs no separate scenarios; only a manual smoke test on Windows. CI
+builds it on every Pages deploy (served at
+`/PowerPrezTools-Setup.exe`) and attaches it to GitHub Releases
+(`.github/workflows/release.yml`).
+
 ## Releasing (maintainers)
 
 One-time: in GitHub **Settings → Pages → Source: GitHub Actions**.

@@ -2,6 +2,7 @@ node_modules/
 dist/
 lib/
 manifest.prod.xml
+PowerPrezTools-Setup.exe
 *.log
 .DS_Store
 *.tgz

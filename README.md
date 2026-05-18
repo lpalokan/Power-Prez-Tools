@@ -23,8 +23,16 @@ You need [Node.js](https://nodejs.org) 18+ and PowerPoint 2019 or later
 npx power-prez-tools install
 ```
 
-**Windows (beta):** Windows support is currently in beta — opt in with
-the `@beta` tag:
+**Windows (beta):** two options.
+
+*Installer (no Node needed):* download and run
+**[PowerPrezTools-Setup.exe](https://lpalokan.github.io/Power-Prez-Tools/PowerPrezTools-Setup.exe)**
+(also attached to each [GitHub Release](https://github.com/lpalokan/Power-Prez-Tools/releases)).
+It installs per-user (no admin) and adds an entry to Add/Remove Programs.
+The installer is unsigned, so Windows SmartScreen may warn — click
+**More info → Run anyway**.
+
+*Or via npx:*
 
 ```
 npx power-prez-tools@beta install
