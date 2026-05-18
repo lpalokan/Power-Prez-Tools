@@ -27,6 +27,10 @@ That's it — there's nothing to host or configure. The add-in's code is
 served from GitHub Pages; the command above just registers it with
 PowerPoint.
 
+**Privacy:** the add-in only reads and sets the selected shape's position
+and size. The captured value is stored locally on your machine; nothing is
+sent anywhere, and there is no tracking or account.
+
 ### Use it
 
 1. Select an image and click **Copy dimensions and position**.
@@ -72,10 +76,12 @@ One-time setup:
 
 1. In the GitHub repo: **Settings → Pages → Build and deployment →
    Source: GitHub Actions**. Pushing to `main` then deploys the add-in to
-   `https://<owner>.github.io/<repo>` via `.github/workflows/pages.yml`
-   (the manifest's URLs are rewritten to the Pages URL automatically).
-2. Confirm `DEFAULT_BASE_URL` in `tools/make-prod-manifest.mjs` matches
-   that Pages URL (used for the manifest bundled into the npm package).
+   <https://lpalokan.github.io/Power-Prez-Tools> via
+   `.github/workflows/pages.yml` (the manifest's URLs are rewritten to the
+   Pages URL automatically at build time).
+2. If the repository is ever renamed or moved, update `DEFAULT_BASE_URL`
+   in `tools/make-prod-manifest.mjs` to match the new Pages URL (it is the
+   URL baked into the manifest bundled in the npm package).
 
 To publish the installer CLI:
 
