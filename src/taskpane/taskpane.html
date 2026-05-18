@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Power Prez Tools</title>
+    <script
+      type="text/javascript"
+      src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js"
+    ></script>
+    <link rel="stylesheet" href="taskpane.css" />
+  </head>
+  <body>
+    <main class="container">
+      <h1>Capture &amp; Paste Geometry</h1>
+      <p class="hint">
+        Select an image, press <strong>Capture</strong>, select another image,
+        then paste its position, size, or both.
+      </p>
+      <button id="btnCapture" class="btn primary" disabled>
+        Capture position &amp; dimensions
+      </button>
+      <button id="btnPastePos" class="btn" disabled>Paste position</button>
+      <button id="btnPasteDim" class="btn" disabled>Paste dimensions</button>
+      <button id="btnPasteBoth" class="btn" disabled>Paste both</button>
+      <div id="status" class="status" role="status" aria-live="polite"></div>
+      <p class="footnote">
+        The captured value is held in memory only and is cleared when this
+        pane is reloaded.
+      </p>
+    </main>
+  </body>
+</html>

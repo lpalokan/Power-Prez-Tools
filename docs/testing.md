@@ -1,0 +1,124 @@
+# Testing
+
+This project follows the BDD-first workflow mandated by `CLAUDE.md`.
+Gherkin `.feature` files are the source of truth. Because a PowerPoint
+add-in is TypeScript/Office.js (not Dart), the scenarios are wired to a
+native TypeScript runner — **Cucumber.js** — instead of Dart
+`build_runner`. The directory layout from `CLAUDE.md` is preserved.
+
+## Layout
+
+```
+integration_test/
+  features/
+    capture_paste.feature          Gherkin scenarios (source of truth)
+    step/capture_paste.steps.ts    step definitions
+  support/
+    world.ts                       Cucumber World (wires service + fake)
+    harness.ts                     FakeShapeGeometryPort (in-memory)
+```
+
+## The seam
+
+All decision logic lives in `src/core/` and depends only on the
+`ShapeGeometryPort` interface (`src/core/shapeGeometryPort.ts`):
+
+- `FakeShapeGeometryPort` (`integration_test/support/harness.ts`) — used
+  by the Cucumber suite, pure in-memory, no Office.js.
+- `OfficeShapeGeometryAdapter` (`src/office/officeShapeGeometryAdapter.ts`)
+  — the real PowerPoint implementation.
+
+`CaptureService` (`src/core/captureService.ts`) imports zero Office.js, so
+every behaviour — including all edge cases — is provable in plain Node.
+
+**Contract drift risk:** the fake and the Office adapter must throw the
+same error types and messages (`SelectionError` "No shape selected." /
+"Select exactly one shape.", `NothingCapturedError` "Nothing has been
+captured yet."). The step assertions match on these. Divergence is
+invisible until manual Mac testing — keep the two implementations in sync
+whenever either changes.
+
+## BDD loop
+
+1. Add/extend a scenario in `integration_test/features/*.feature` first.
+2. Reuse an existing step phrase if one fits; only add a new step in
+   `step/capture_paste.steps.ts` (delegating through the World/service)
+   when none does.
+3. `npm test` — confirm the new scenario fails for the right reason (red).
+4. Implement in `src/core/` until it passes (green); refactor under green.
+5. Mirror any new `ShapeGeometryPort` behaviour into both the fake and
+   the Office adapter.
+
+Bug fixes follow the same loop: add a reproducing scenario first.
+
+## Commands (verifiable in any environment, incl. CI/Linux)
+
+```
+npm install
+npm test
+npm run lint
+npm run build
+npm run validate
+```
+
+`npm test` runs the full Gherkin suite against the fake port and proves
+all capture/paste logic and edge cases with no PowerPoint.
+
+## Step catalogue
+
+| Phrase | Kind |
+| --- | --- |
+| `an empty capture slot` | Given |
+| `a shape "<id>" at left <n> top <n> width <n> height <n> is selected` | Given |
+| `no shape is selected` | Given |
+| `shapes "<a>" and "<b>" are both selected` | Given |
+| `I capture position and dimensions` | When/And |
+| `I paste position` | When |
+| `I paste dimensions` | When |
+| `I paste both` | When |
+| `the capture slot holds left <n> top <n> width <n> height <n>` | Then |
+| `shape "<id>" is at left <n> top <n> width <n> height <n>` | Then |
+| `the capture slot is empty` | Then |
+| `I am told nothing has been captured yet` | Then |
+| `I am told no shape is selected` | Then |
+| `I am told to select exactly one shape` | Then |
+
+## What only a Mac (with PowerPoint) can verify
+
+The following cannot be exercised in the Linux/CI container — they need a
+real PowerPoint host:
+
+- `src/office/officeShapeGeometryAdapter.ts` (the `PowerPoint.run` /
+  `getSelectedShapes()` calls and real points-based geometry).
+- The `Office.onReady` shell and `isSetSupported("PowerPointApi","1.4")`
+  guard in `src/taskpane/taskpane.ts`.
+- Live manifest load and the `ReadWriteDocument` permission grant.
+
+### Sideload and manual end-to-end test on the Mac
+
+Requires PowerPoint for Mac new enough to support **PowerPointApi 1.4**
+(older builds will load the pane but show the "too old" message).
+
+```
+git pull
+npm install
+npm start
+```
+
+`npm start` (office-addin-debugging) builds, starts the HTTPS dev server
+on port 3000, trusts the dev certificate, registers `manifest.xml` in the
+Mac sideload folder, and launches PowerPoint. Then in PowerPoint:
+
+1. Insert → Add-ins → My Add-ins → **Power Prez Tools** (opens the pane).
+2. Insert two images on a slide.
+3. Select the first image → **Capture position & dimensions**.
+4. Select the second image → **Paste both** → it should snap to match.
+5. Repeat with **Paste position** and **Paste dimensions** to confirm
+   each applies only its half.
+6. Edge checks: paste before capturing; capture/paste with nothing
+   selected; capture/paste with two shapes selected — each should show a
+   clear error and leave shapes unchanged.
+
+Note: the captured value is in memory only and clears when the pane
+reloads. Any defect found here must start a new BDD loop — add a
+reproducing scenario before fixing.
