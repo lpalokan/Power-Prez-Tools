@@ -20,7 +20,7 @@ This file provides guidance to Claude Code when working with code in this reposi
 
 ## Project
 
-Flutter Android app for tracking work mileage and daily allowances (kilometrikorvaus / päiväraha).
+Power Pres Tools application suite to help working with PowerPoint on Mac.
 
 ## BDD-first development (mandatory)
 
@@ -43,15 +43,3 @@ Do not write feature/implementation code before its Gherkin scenario
 exists and fails. Bug fixes follow the same loop: add a scenario that
 reproduces the bug first. See `docs/testing.md` for the full workflow,
 step catalogue, and maintenance guide.
-
-## Architecture
-
-- State management: Riverpod
-- Local DB: sqflite
-- Google Sheets: googleapis + google_sign_in
-- Background: flutter_background_service + geolocator + flutter_local_notifications
-- Models in `lib/models/`
-- Services in `lib/services/`
-- Providers in `lib/providers/`
-- Screens in `lib/screens/`
-- Widgets in `lib/widgets/`
