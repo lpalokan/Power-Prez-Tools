@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Power Prez Tools</title>
+    <script
+      type="text/javascript"
+      src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js"
+    ></script>
+    <style>
+      body {
+        font-family: -apple-system, system-ui, "Segoe UI", sans-serif;
+        margin: 0;
+        padding: 16px;
+        color: #323130;
+      }
+      p {
+        margin: 0 0 16px;
+        font-size: 14px;
+        line-height: 1.4;
+      }
+      button {
+        font-size: 14px;
+        padding: 6px 18px;
+        border: none;
+        border-radius: 2px;
+        background: #d83b01;
+        color: #fff;
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <p id="msg"></p>
+    <button id="close" type="button">Close</button>
+    <script type="text/javascript">
+      (function () {
+        var params = new URLSearchParams(window.location.search);
+        document.getElementById("msg").textContent = params.get("msg") || "";
+        Office.onReady(function () {
+          document
+            .getElementById("close")
+            .addEventListener("click", function () {
+              Office.context.ui.messageParent("close");
+            });
+        });
+      })();
+    </script>
+  </body>
+</html>

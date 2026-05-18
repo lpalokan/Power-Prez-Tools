@@ -3,13 +3,14 @@
   xmlns="http://schemas.microsoft.com/office/appforoffice/1.1"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xmlns:bt="http://schemas.microsoft.com/office/officeappbasictypes/1.0"
+  xmlns:ov="http://schemas.microsoft.com/office/taskpaneappversionoverrides"
   xsi:type="TaskPaneApp">
   <Id>9d639a54-56fb-4f4f-96ba-42406fc43586</Id>
   <Version>1.0.0.0</Version>
   <ProviderName>Power Prez Tools</ProviderName>
   <DefaultLocale>en-US</DefaultLocale>
   <DisplayName DefaultValue="Power Prez Tools" />
-  <Description DefaultValue="Capture an image's position and size, then paste it onto another image." />
+  <Description DefaultValue="Copy an image's position and size, then paste it onto another image." />
   <IconUrl DefaultValue="https://localhost:3000/assets/icon-64.png" />
   <HighResolutionIconUrl DefaultValue="https://localhost:3000/assets/icon-80.png" />
   <SupportUrl DefaultValue="https://github.com/lpalokan/power-prez-tools" />
@@ -22,7 +23,129 @@
     </Sets>
   </Requirements>
   <DefaultSettings>
-    <SourceLocation DefaultValue="https://localhost:3000/taskpane.html" />
+    <SourceLocation DefaultValue="https://localhost:3000/commands.html" />
   </DefaultSettings>
   <Permissions>ReadWriteDocument</Permissions>
+  <VersionOverrides
+    xmlns="http://schemas.microsoft.com/office/taskpaneappversionoverrides"
+    xsi:type="VersionOverridesV1_0">
+    <Hosts>
+      <Host xsi:type="Presentation">
+        <DesktopFormFactor>
+          <FunctionFile resid="Commands.Url" />
+          <ExtensionPoint xsi:type="PrimaryCommandSurface">
+            <OfficeTab id="TabHome">
+              <Group id="PPTGroup">
+                <Label resid="Group.Label" />
+                <Icon>
+                  <bt:Image size="16" resid="Icon.16" />
+                  <bt:Image size="32" resid="Icon.32" />
+                  <bt:Image size="80" resid="Icon.80" />
+                </Icon>
+                <Control xsi:type="Button" id="CopyBtn">
+                  <Label resid="Copy.Label" />
+                  <Supertip>
+                    <Title resid="Copy.Label" />
+                    <Description resid="Copy.Tip" />
+                  </Supertip>
+                  <Icon>
+                    <bt:Image size="16" resid="Icon.16" />
+                    <bt:Image size="32" resid="Icon.32" />
+                    <bt:Image size="80" resid="Icon.80" />
+                  </Icon>
+                  <Action xsi:type="ExecuteFunction">
+                    <FunctionName>copy</FunctionName>
+                  </Action>
+                </Control>
+                <Control xsi:type="Button" id="PasteBothBtn">
+                  <Label resid="PasteBoth.Label" />
+                  <Supertip>
+                    <Title resid="PasteBoth.Label" />
+                    <Description resid="PasteBoth.Tip" />
+                  </Supertip>
+                  <Icon>
+                    <bt:Image size="16" resid="Icon.16" />
+                    <bt:Image size="32" resid="Icon.32" />
+                    <bt:Image size="80" resid="Icon.80" />
+                  </Icon>
+                  <Action xsi:type="ExecuteFunction">
+                    <FunctionName>pasteBoth</FunctionName>
+                  </Action>
+                </Control>
+                <Control xsi:type="Menu" id="PasteMenu">
+                  <Label resid="PasteMenu.Label" />
+                  <Supertip>
+                    <Title resid="PasteMenu.Label" />
+                    <Description resid="PasteMenu.Tip" />
+                  </Supertip>
+                  <Icon>
+                    <bt:Image size="16" resid="Icon.16" />
+                    <bt:Image size="32" resid="Icon.32" />
+                    <bt:Image size="80" resid="Icon.80" />
+                  </Icon>
+                  <Items>
+                    <Item id="PasteDimItem">
+                      <Label resid="PasteDim.Label" />
+                      <Supertip>
+                        <Title resid="PasteDim.Label" />
+                        <Description resid="PasteDim.Tip" />
+                      </Supertip>
+                      <Icon>
+                        <bt:Image size="16" resid="Icon.16" />
+                        <bt:Image size="32" resid="Icon.32" />
+                        <bt:Image size="80" resid="Icon.80" />
+                      </Icon>
+                      <Action xsi:type="ExecuteFunction">
+                        <FunctionName>pasteDimensions</FunctionName>
+                      </Action>
+                    </Item>
+                    <Item id="PastePosItem">
+                      <Label resid="PastePos.Label" />
+                      <Supertip>
+                        <Title resid="PastePos.Label" />
+                        <Description resid="PastePos.Tip" />
+                      </Supertip>
+                      <Icon>
+                        <bt:Image size="16" resid="Icon.16" />
+                        <bt:Image size="32" resid="Icon.32" />
+                        <bt:Image size="80" resid="Icon.80" />
+                      </Icon>
+                      <Action xsi:type="ExecuteFunction">
+                        <FunctionName>pastePosition</FunctionName>
+                      </Action>
+                    </Item>
+                  </Items>
+                </Control>
+              </Group>
+            </OfficeTab>
+          </ExtensionPoint>
+        </DesktopFormFactor>
+      </Host>
+    </Hosts>
+    <Resources>
+      <bt:Images>
+        <bt:Image id="Icon.16" DefaultValue="https://localhost:3000/assets/icon-32.png" />
+        <bt:Image id="Icon.32" DefaultValue="https://localhost:3000/assets/icon-32.png" />
+        <bt:Image id="Icon.80" DefaultValue="https://localhost:3000/assets/icon-80.png" />
+      </bt:Images>
+      <bt:Urls>
+        <bt:Url id="Commands.Url" DefaultValue="https://localhost:3000/commands.html" />
+      </bt:Urls>
+      <bt:ShortStrings>
+        <bt:String id="Group.Label" DefaultValue="Power Prez Tools" />
+        <bt:String id="Copy.Label" DefaultValue="Copy dimensions and position" />
+        <bt:String id="PasteBoth.Label" DefaultValue="Paste dimensions and position" />
+        <bt:String id="PasteMenu.Label" DefaultValue="Paste options" />
+        <bt:String id="PasteDim.Label" DefaultValue="Paste dimensions only" />
+        <bt:String id="PastePos.Label" DefaultValue="Paste position only" />
+      </bt:ShortStrings>
+      <bt:LongStrings>
+        <bt:String id="Copy.Tip" DefaultValue="Capture the position and size of the selected image." />
+        <bt:String id="PasteBoth.Tip" DefaultValue="Apply the captured position and size to the selected image." />
+        <bt:String id="PasteMenu.Tip" DefaultValue="Apply only the captured dimensions or only the captured position." />
+        <bt:String id="PasteDim.Tip" DefaultValue="Apply only the captured width and height to the selected image." />
+        <bt:String id="PastePos.Tip" DefaultValue="Apply only the captured position to the selected image." />
+      </bt:LongStrings>
+    </Resources>
+  </VersionOverrides>
 </OfficeApp>

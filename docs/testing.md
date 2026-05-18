@@ -90,35 +90,49 @@ real PowerPoint host:
 
 - `src/office/officeShapeGeometryAdapter.ts` (the `PowerPoint.run` /
   `getSelectedShapes()` calls and real points-based geometry).
-- The `Office.onReady` shell and `isSetSupported("PowerPointApi","1.4")`
-  guard in `src/taskpane/taskpane.ts`.
-- Live manifest load and the `ReadWriteDocument` permission grant.
+- The ribbon function-file runtime `src/commands/commands.ts`: the
+  `Office.actions.associate` wiring, the `isSetSupported("PowerPointApi",
+  "1.4")` guard, and the error dialog (`src/dialog/dialog.html`).
+- Live manifest load (`VersionOverrides` ribbon controls) and the
+  `ReadWriteDocument` permission grant.
+
+### UI surface
+
+The add-in has **no task pane**. It adds a "Power Prez Tools" group to
+the PowerPoint Home tab with: a **Copy dimensions and position** button, a
+**Paste dimensions and position** button, and a **Paste options** dropdown
+(**Paste dimensions only** / **Paste position only**). Each maps to a
+`CaptureService` method. Success is silent (the image visibly moves);
+errors appear in a small Office dialog.
 
 ### Sideload and manual end-to-end test on the Mac
 
 Requires PowerPoint for Mac new enough to support **PowerPointApi 1.4**
-(older builds will load the pane but show the "too old" message).
+(older builds show the "too old" dialog on first command).
 
 ```
 git pull
 npm install
+npx office-addin-dev-certs install
 npm start
 ```
 
 `npm start` (office-addin-debugging) builds, starts the HTTPS dev server
-on port 3000, trusts the dev certificate, registers `manifest.xml` in the
-Mac sideload folder, and launches PowerPoint. Then in PowerPoint:
+on port 3000 via the `dev-server` script, registers `manifest.xml` in the
+Mac sideload folder, and launches PowerPoint. Then in PowerPoint, on the
+**Home** tab look for the **Power Prez Tools** group:
 
-1. Insert → Add-ins → My Add-ins → **Power Prez Tools** (opens the pane).
-2. Insert two images on a slide.
-3. Select the first image → **Capture position & dimensions**.
-4. Select the second image → **Paste both** → it should snap to match.
-5. Repeat with **Paste position** and **Paste dimensions** to confirm
-   each applies only its half.
-6. Edge checks: paste before capturing; capture/paste with nothing
-   selected; capture/paste with two shapes selected — each should show a
-   clear error and leave shapes unchanged.
+1. Insert two images on a slide.
+2. Select the first image → **Copy dimensions and position**.
+3. Select the second image → **Paste dimensions and position** → it
+   should snap to match.
+4. Repeat using the **Paste options** dropdown → **Paste dimensions
+   only** / **Paste position only** to confirm each applies only its half.
+5. Edge checks: paste before copying; copy/paste with nothing selected;
+   copy/paste with two shapes selected — each should show a clear error
+   dialog and leave shapes unchanged.
 
-Note: the captured value is in memory only and clears when the pane
-reloads. Any defect found here must start a new BDD loop — add a
-reproducing scenario before fixing.
+Note: the captured value is in memory only and clears when PowerPoint
+closes (the function-file runtime persists for the session, so Copy then
+Paste across different images works). Any defect found here must start a
+new BDD loop — add a reproducing scenario before fixing.

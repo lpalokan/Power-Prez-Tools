@@ -8,25 +8,25 @@ module.exports = async (env, argv) => {
   const serving = process.env.WEBPACK_SERVE === "true";
   const httpsOptions = serving ? await devCerts.getHttpsServerOptions() : null;
   return {
-    entry: "./src/taskpane/taskpane.ts",
+    entry: "./src/commands/commands.ts",
     devtool: dev ? "source-map" : false,
     resolve: { extensions: [".ts", ".js"] },
     module: {
       rules: [{ test: /\.ts$/, use: "ts-loader", exclude: /node_modules/ }],
     },
     output: {
-      filename: "taskpane.js",
+      filename: "commands.js",
       path: path.resolve(__dirname, "dist"),
       clean: true,
     },
     plugins: [
       new HtmlWebpackPlugin({
-        template: "./src/taskpane/taskpane.html",
-        filename: "taskpane.html",
+        template: "./src/commands/commands.html",
+        filename: "commands.html",
       }),
       new CopyWebpackPlugin({
         patterns: [
-          { from: "src/taskpane/taskpane.css", to: "taskpane.css" },
+          { from: "src/dialog/dialog.html", to: "dialog.html" },
           { from: "assets", to: "assets" },
           { from: "manifest.xml", to: "manifest.xml" },
         ],
