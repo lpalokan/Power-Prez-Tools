@@ -3,7 +3,7 @@ import * as assert from "assert";
 import { TestWorld } from "../../support/world";
 
 Given("an empty capture slot", function (this: TestWorld) {
-  this.store.clear();
+  this.slot.clear();
   this.lastError = null;
 });
 
@@ -59,7 +59,7 @@ When("I paste both", function (this: TestWorld) {
 Then(
   /^the capture slot holds left (\d+) top (\d+) width (\d+) height (\d+)$/,
   function (this: TestWorld, l: string, t: string, w: string, h: string) {
-    assert.deepStrictEqual(this.store.get(), {
+    assert.deepStrictEqual(this.slot.peek(), {
       left: +l,
       top: +t,
       width: +w,
@@ -81,7 +81,7 @@ Then(
 );
 
 Then("the capture slot is empty", function (this: TestWorld) {
-  assert.ok(this.store.isEmpty, "expected the capture slot to be empty");
+  assert.ok(this.slot.isEmpty, "expected the capture slot to be empty");
 });
 
 Then("I am told nothing has been captured yet", function (this: TestWorld) {

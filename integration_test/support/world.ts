@@ -1,17 +1,15 @@
 import { setWorldConstructor, World, IWorldOptions } from "@cucumber/cucumber";
 import { FakeShapeGeometryPort } from "./harness";
 import { FakeFileSystem } from "./fakeFileSystem";
-import { MemoryCaptureSlotStorage } from "../../src/core/captureSlotStorage";
-import { CaptureStore } from "../../src/core/captureStore";
+import { MemoryCaptureSlot } from "../../src/core/captureSlot";
 import { CaptureService } from "../../src/core/captureService";
 
 export class TestWorld extends World {
   readonly port = new FakeShapeGeometryPort();
-  // The backend outlives a runtime restart, modelling localStorage in the
-  // PowerPoint ribbon runtime.
-  private readonly storage = new MemoryCaptureSlotStorage();
-  store = new CaptureStore(this.storage);
-  service = new CaptureService(this.port, this.store);
+  // The slot instance outlives a runtime restart, modelling localStorage
+  // in the PowerPoint ribbon runtime (which is torn down between clicks).
+  readonly slot = new MemoryCaptureSlot();
+  service = new CaptureService(this.port, this.slot);
   lastError: Error | null = null;
 
   // Installer scenario state.
@@ -29,8 +27,7 @@ export class TestWorld extends World {
 
   /** Simulate the ribbon function-file runtime being torn down and reloaded. */
   restartRuntime(): void {
-    this.store = new CaptureStore(this.storage);
-    this.service = new CaptureService(this.port, this.store);
+    this.service = new CaptureService(this.port, this.slot);
   }
 }
 

@@ -1,5 +1,5 @@
 import { ShapeGeometryPort } from "./shapeGeometryPort";
-import { CaptureStore } from "./captureStore";
+import { CaptureSlot } from "./captureSlot";
 import { Geometry, positionOf, dimensionsOf } from "./geometry";
 
 /** Raised when a paste is attempted before anything has been captured. */
@@ -9,12 +9,12 @@ export class NothingCapturedError extends Error {}
 export class CaptureService {
   constructor(
     private readonly port: ShapeGeometryPort,
-    private readonly store: CaptureStore,
+    private readonly slot: CaptureSlot,
   ) {}
 
   async capture(): Promise<void> {
     const g = await this.port.getSelectedGeometry();
-    this.store.capture(g);
+    this.slot.capture(g);
   }
 
   async pastePosition(): Promise<void> {
@@ -30,7 +30,7 @@ export class CaptureService {
   }
 
   private requireCaptured(): Geometry {
-    const g = this.store.get();
+    const g = this.slot.peek();
     if (!g) throw new NothingCapturedError("Nothing has been captured yet.");
     return g;
   }

@@ -1,6 +1,5 @@
 import { OfficeShapeGeometryAdapter } from "../office/officeShapeGeometryAdapter";
-import { LocalStorageCaptureSlotStorage } from "../office/localStorageCaptureSlotStorage";
-import { CaptureStore } from "../core/captureStore";
+import { LocalStorageCaptureSlot } from "../office/localStorageCaptureSlot";
 import { CaptureService } from "../core/captureService";
 
 /* global Office, location */
@@ -11,8 +10,10 @@ let service: CaptureService | null = null;
 
 function getService(): CaptureService {
   if (!service) {
-    const store = new CaptureStore(new LocalStorageCaptureSlotStorage());
-    service = new CaptureService(new OfficeShapeGeometryAdapter(), store);
+    service = new CaptureService(
+      new OfficeShapeGeometryAdapter(),
+      new LocalStorageCaptureSlot(),
+    );
   }
   return service;
 }
