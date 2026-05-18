@@ -64,3 +64,10 @@ Feature: Capture and paste shape geometry
     And shapes "B" and "C" are both selected
     When I paste position
     Then I am told to select exactly one shape
+
+  Scenario: Pasting with no shape selected is rejected
+    Given a shape "A" at left 100 top 50 width 200 height 150 is selected
+    And I capture position and dimensions
+    And no shape is selected
+    When I paste both
+    Then I am told no shape is selected

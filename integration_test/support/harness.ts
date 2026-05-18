@@ -1,11 +1,12 @@
-import { ShapeGeometryPort, SelectionError } from "../../src/core/shapeGeometryPort";
-import { Geometry, Position, Dimensions } from "../../src/core/geometry";
+import { ShapeGeometryPort, requireExactlyOne } from "../../src/core/shapeGeometryPort";
+import { Geometry } from "../../src/core/geometry";
 
 /**
- * In-memory stand-in for PowerPoint used by the Cucumber suite. It must
- * honour the same ShapeGeometryPort contract (including error types and
- * messages) as the real OfficeShapeGeometryAdapter, since step assertions
- * depend on them. Contract drift only surfaces during manual Mac testing.
+ * In-memory stand-in for PowerPoint used by the Cucumber suite. The
+ * selection invariant and its error wording are no longer copied here:
+ * both this fake and the real OfficeShapeGeometryAdapter call the one
+ * core helper (requireExactlyOne), so the contract the step assertions
+ * depend on cannot drift between them.
  */
 export class FakeShapeGeometryPort implements ShapeGeometryPort {
   readonly shapes = new Map<string, Geometry>();
@@ -19,27 +20,12 @@ export class FakeShapeGeometryPort implements ShapeGeometryPort {
     this.selectedIds = ids;
   }
 
-  private one(): string {
-    if (this.selectedIds.length === 0) throw new SelectionError("No shape selected.");
-    if (this.selectedIds.length > 1) throw new SelectionError("Select exactly one shape.");
-    return this.selectedIds[0];
-  }
-
   async getSelectedGeometry(): Promise<Geometry> {
-    return { ...this.shapes.get(this.one())! };
+    return { ...this.shapes.get(requireExactlyOne(this.selectedIds))! };
   }
 
-  async applyPosition(p: Position): Promise<void> {
-    const id = this.one();
-    this.shapes.set(id, { ...this.shapes.get(id)!, ...p });
-  }
-
-  async applyDimensions(d: Dimensions): Promise<void> {
-    const id = this.one();
-    this.shapes.set(id, { ...this.shapes.get(id)!, ...d });
-  }
-
-  async applyGeometry(g: Geometry): Promise<void> {
-    this.shapes.set(this.one(), { ...g });
+  async applyGeometry(partial: Partial<Geometry>): Promise<void> {
+    const id = requireExactlyOne(this.selectedIds);
+    this.shapes.set(id, { ...this.shapes.get(id)!, ...partial });
   }
 }

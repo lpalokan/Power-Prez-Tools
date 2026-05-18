@@ -18,11 +18,11 @@ export class CaptureService {
   }
 
   async pastePosition(): Promise<void> {
-    await this.port.applyPosition(positionOf(this.requireCaptured()));
+    await this.port.applyGeometry(positionOf(this.requireCaptured()));
   }
 
   async pasteDimensions(): Promise<void> {
-    await this.port.applyDimensions(dimensionsOf(this.requireCaptured()));
+    await this.port.applyGeometry(dimensionsOf(this.requireCaptured()));
   }
 
   async pasteBoth(): Promise<void> {
