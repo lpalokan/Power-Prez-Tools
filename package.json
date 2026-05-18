@@ -5,7 +5,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/lpalokan/Power-Prez-Tools.git"
+    "url": "git+https://github.com/lpalokan/Power-Prez-Tools.git"
   },
   "bin": {
     "power-prez-tools": "bin/power-prez-tools.js"
