@@ -28,7 +28,17 @@ module.exports = async (env, argv) => {
         patterns: [
           { from: "src/dialog/dialog.html", to: "dialog.html" },
           { from: "assets", to: "assets" },
-          { from: "manifest.xml", to: "manifest.xml" },
+          {
+            from: "manifest.xml",
+            to: "manifest.xml",
+            transform(content) {
+              const baseUrl = process.env.ADDIN_BASE_URL || "https://localhost:3000";
+              return content
+                .toString()
+                .split("https://localhost:3000")
+                .join(baseUrl.replace(/\/+$/, ""));
+            },
+          },
         ],
       }),
     ],

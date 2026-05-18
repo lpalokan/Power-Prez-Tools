@@ -5,13 +5,10 @@
     "moduleResolution": "node",
     "lib": ["ES2019"],
     "types": ["node"],
-    "sourceMap": false,
-    "noEmit": true
+    "rootDir": "src",
+    "outDir": "lib",
+    "sourceMap": false
   },
-  "include": [
-    "src/core/**/*.ts",
-    "src/cli/**/*.ts",
-    "integration_test/**/*.ts"
-  ],
+  "include": ["src/cli/**/*.ts"],
   "exclude": []
 }

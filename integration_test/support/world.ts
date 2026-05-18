@@ -1,5 +1,6 @@
 import { setWorldConstructor, World, IWorldOptions } from "@cucumber/cucumber";
 import { FakeShapeGeometryPort } from "./harness";
+import { FakeFileSystem } from "./fakeFileSystem";
 import { MemoryCaptureSlotStorage } from "../../src/core/captureSlotStorage";
 import { CaptureStore } from "../../src/core/captureStore";
 import { CaptureService } from "../../src/core/captureService";
@@ -12,6 +13,13 @@ export class TestWorld extends World {
   store = new CaptureStore(this.storage);
   service = new CaptureService(this.port, this.store);
   lastError: Error | null = null;
+
+  // Installer scenario state.
+  readonly fakeFs = new FakeFileSystem();
+  platform = "darwin";
+  home = "/Users/jo";
+  resolvedDir: string | null = null;
+  uninstalled: boolean | null = null;
 
   constructor(options: IWorldOptions) {
     super(options);

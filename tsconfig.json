@@ -12,5 +12,6 @@
     "sourceMap": true,
     "types": ["office-js"]
   },
-  "include": ["src/**/*.ts"]
+  "include": ["src/**/*.ts"],
+  "exclude": ["node_modules", "src/cli/**/*.ts"]
 }

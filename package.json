@@ -1,12 +1,30 @@
 {
   "name": "power-prez-tools",
-  "version": "0.1.0",
-  "description": "PowerPoint for Mac add-in: capture an image's position/size and paste it onto another image.",
+  "version": "1.0.0",
+  "description": "PowerPoint add-in: copy an image's position/size and paste it onto another image.",
   "license": "MIT",
-  "private": true,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/lpalokan/Power-Prez-Tools.git"
+  },
+  "bin": {
+    "power-prez-tools": "bin/power-prez-tools.js"
+  },
+  "files": [
+    "bin/",
+    "lib/",
+    "manifest.prod.xml",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
   "scripts": {
     "build": "webpack --mode production",
     "build:dev": "webpack --mode development",
+    "build:cli": "tsc -p tsconfig.cli.json",
+    "manifest:prod": "node tools/make-prod-manifest.mjs",
     "dev-server": "webpack serve --mode development",
     "start": "office-addin-debugging start manifest.xml",
     "stop": "office-addin-debugging stop manifest.xml",
@@ -14,7 +32,8 @@
     "lint": "eslint . --ext .ts",
     "lint:fix": "eslint . --ext .ts --fix",
     "test": "cross-env TS_NODE_PROJECT=tsconfig.test.json cucumber-js",
-    "test:watch": "cross-env TS_NODE_PROJECT=tsconfig.test.json cucumber-js --watch"
+    "test:watch": "cross-env TS_NODE_PROJECT=tsconfig.test.json cucumber-js --watch",
+    "prepublishOnly": "npm run lint && npm test && npm run build:cli && npm run manifest:prod"
   },
   "devDependencies": {
     "@cucumber/cucumber": "^10.9.0",

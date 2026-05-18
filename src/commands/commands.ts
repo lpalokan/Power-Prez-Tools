@@ -3,7 +3,7 @@ import { LocalStorageCaptureSlotStorage } from "../office/localStorageCaptureSlo
 import { CaptureStore } from "../core/captureStore";
 import { CaptureService } from "../core/captureService";
 
-/* global Office */
+/* global Office, location */
 
 // The PowerPoint for Mac ribbon runtime is torn down between button clicks,
 // so the capture slot is persisted in localStorage rather than memory.
@@ -20,7 +20,7 @@ function getService(): CaptureService {
 let dialog: Office.Dialog | null = null;
 
 function showMessage(message: string): void {
-  const url = `https://localhost:3000/dialog.html?msg=${encodeURIComponent(message)}`;
+  const url = `${location.origin}/dialog.html?msg=${encodeURIComponent(message)}`;
   Office.context.ui.displayDialogAsync(
     url,
     { height: 24, width: 32, displayInIframe: true },

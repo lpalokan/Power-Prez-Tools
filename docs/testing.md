@@ -141,3 +141,15 @@ Note: the captured value is persisted in the add-in origin's
 runtime is torn down between clicks; it also survives a PowerPoint
 restart. Any defect found here must start a new BDD loop — add a
 reproducing scenario before fixing.
+
+## Distribution
+
+End users install via `npx power-prez-tools install` (see the README).
+The add-in's static files are hosted on GitHub Pages (deployed by
+`.github/workflows/pages.yml`); the npm CLI only copies the production
+manifest into PowerPoint's sideload folder. The installer's pure logic
+(`src/cli/installer.ts`, path resolution + copy/remove behind a
+`FileSystemPort`) is covered by `integration_test/features/installer.feature`
+using an in-memory filesystem; the Node `fs` adapter
+(`src/cli/nodeFileSystem.ts`) is the only untestable boundary, mirroring
+the Office.js seam.
