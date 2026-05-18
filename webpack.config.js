@@ -1,9 +1,12 @@
 const path = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
+const devCerts = require("office-addin-dev-certs");
 
-module.exports = (env, argv) => {
+module.exports = async (env, argv) => {
   const dev = argv.mode === "development";
+  const serving = process.env.WEBPACK_SERVE === "true";
+  const httpsOptions = serving ? await devCerts.getHttpsServerOptions() : null;
   return {
     entry: "./src/taskpane/taskpane.ts",
     devtool: dev ? "source-map" : false,
@@ -31,7 +34,16 @@ module.exports = (env, argv) => {
     ],
     devServer: {
       static: path.resolve(__dirname, "dist"),
-      server: "https",
+      server: httpsOptions
+        ? {
+            type: "https",
+            options: {
+              key: httpsOptions.key,
+              cert: httpsOptions.cert,
+              ca: httpsOptions.ca,
+            },
+          }
+        : "https",
       port: 3000,
       headers: { "Access-Control-Allow-Origin": "*" },
     },
