@@ -32,3 +32,13 @@ Feature: Ribbon command behaviour
     When I run the copy command
     Then I am shown a message that no shape is selected
     And the command signals it is done
+
+  Scenario: The message dialog resolves under the add-in's own base path
+    Given the add-in is served from "https://lpalokan.github.io/Power-Prez-Tools/commands.html"
+    When a "No shape selected." message needs a dialog
+    Then the dialog opens at "https://lpalokan.github.io/Power-Prez-Tools/dialog.html?msg=No%20shape%20selected."
+
+  Scenario: The dialog still resolves when the add-in is served from the host root
+    Given the add-in is served from "https://localhost:3000/commands.html"
+    When a "Nothing has been captured yet." message needs a dialog
+    Then the dialog opens at "https://localhost:3000/dialog.html?msg=Nothing%20has%20been%20captured%20yet."

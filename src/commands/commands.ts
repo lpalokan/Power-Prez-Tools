@@ -2,6 +2,7 @@ import { OfficeShapeGeometryAdapter } from "../office/officeShapeGeometryAdapter
 import { LocalStorageCaptureSlot } from "../office/localStorageCaptureSlot";
 import { CaptureService } from "../core/captureService";
 import { ActionRunner, CommandHost } from "../core/commandHost";
+import { resolveDialogUrl } from "../core/dialogUrl";
 
 /* global Office, location */
 
@@ -22,7 +23,7 @@ function getService(): CaptureService {
 let dialog: Office.Dialog | null = null;
 
 function showDialog(message: string): void {
-  const url = `${location.origin}/dialog.html?msg=${encodeURIComponent(message)}`;
+  const url = resolveDialogUrl(location.href, message);
   Office.context.ui.displayDialogAsync(
     url,
     { height: 24, width: 32, displayInIframe: true },

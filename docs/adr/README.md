@@ -9,3 +9,4 @@ Status / Context / Decision / Consequences.
 - [0003](0003-capture-slot-single-seam.md) — Capture slot is a single seam
 - [0004](0004-office-free-action-runner.md) — Office-free ActionRunner over a CommandHost seam
 - [0005](0005-cli-environment-seam.md) — Office-free Cli runner over a CliEnvironment seam
+- [0006](0006-office-free-dialog-url.md) — Office-free dialog-URL resolution

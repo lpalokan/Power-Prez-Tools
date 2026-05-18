@@ -1,6 +1,7 @@
 import { Given, When, Then } from "@cucumber/cucumber";
 import * as assert from "assert";
 import { TestWorld } from "../../support/world";
+import { resolveDialogUrl } from "../../../src/core/dialogUrl";
 
 function assertMessage(world: TestWorld, pattern: RegExp): void {
   assert.ok(
@@ -45,4 +46,23 @@ Then("no message is shown", function (this: TestWorld) {
 
 Then("the command signals it is done", function (this: TestWorld) {
   assert.strictEqual(this.host.completedCount, 1);
+});
+
+Given(
+  "the add-in is served from {string}",
+  function (this: TestWorld, baseHref: string) {
+    this.addinBaseHref = baseHref;
+  },
+);
+
+When(
+  "a {string} message needs a dialog",
+  function (this: TestWorld, message: string) {
+    assert.ok(this.addinBaseHref, "no add-in base href set");
+    this.resolvedDialogUrl = resolveDialogUrl(this.addinBaseHref, message);
+  },
+);
+
+Then("the dialog opens at {string}", function (this: TestWorld, expected: string) {
+  assert.strictEqual(this.resolvedDialogUrl, expected);
 });
