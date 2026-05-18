@@ -31,10 +31,8 @@ before any implementation code:
    English under `integration_test/features/`. This is the source of truth
    for what the feature does.
 2. **Wire steps to the harness.** Reuse existing steps where possible; only
-   add a new step file in `integration_test/features/step/` (delegating to
-   `integration_test/support/harness.dart`) when no existing phrase fits.
-3. **Generate and run the failing test** (`dart run build_runner build
-   --delete-conflicting-outputs`, then the emulator suite) — confirm it
+   add a new step file in `integration_test/features/step/`  when no existing phrase fits.
+3. **Generate and run the failing test**  — confirm it
    fails for the right reason (red).
 4. **Only then implement** the feature until the scenario passes (green),
    then refactor.
