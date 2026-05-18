@@ -32,6 +32,6 @@ export class LocalStorageCaptureSlot implements CaptureSlot {
   }
 
   get isEmpty(): boolean {
-    return this.peek() === null;
+    return localStorage.getItem(KEY) === null;
   }
 }
