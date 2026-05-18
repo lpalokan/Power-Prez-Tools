@@ -1,6 +1,6 @@
 {
   "name": "power-prez-tools",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "PowerPoint add-in: copy an image's position/size and paste it onto another image.",
   "license": "MIT",
   "repository": {

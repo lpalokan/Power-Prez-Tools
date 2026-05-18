@@ -18,6 +18,17 @@ This file provides guidance to Claude Code when working with code in this reposi
   The user pastes blocks into zsh and the comments cause confusion.
   Put any explanation in prose before or after the block instead.
 
+## Versioning
+
+- `package.json` `version` is the source of truth for the published npm
+  package. **Keep track of it** and bump it (semver) before every
+  `npm publish` whenever anything in the published package changes.
+- Stable releases go to the npm `latest` tag. In-progress / not-yet-validated
+  work (e.g. Windows) uses a prerelease version (`x.y.z-beta.n`) and the
+  `beta` dist-tag so `latest` is never disturbed.
+- Never reuse or regress a published version number; npm rejects it and it
+  confuses users.
+
 ## Project
 
 Power Pres Tools application suite to help working with PowerPoint on Mac.
