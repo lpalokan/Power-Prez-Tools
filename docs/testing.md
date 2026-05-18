@@ -153,3 +153,17 @@ manifest into PowerPoint's sideload folder. The installer's pure logic
 using an in-memory filesystem; the Node `fs` adapter
 (`src/cli/nodeFileSystem.ts`) is the only untestable boundary, mirroring
 the Office.js seam.
+
+## Releasing (maintainers)
+
+One-time: in GitHub **Settings → Pages → Source: GitHub Actions**.
+Pushing to `main` then deploys the add-in to
+<https://lpalokan.github.io/Power-Prez-Tools> via
+`.github/workflows/pages.yml` (manifest URLs are rewritten to the Pages
+URL at build time). If the repo is renamed/moved, update
+`DEFAULT_BASE_URL` in `tools/make-prod-manifest.mjs` — it is baked into
+the manifest bundled in the npm package.
+
+Publish the installer CLI with `npm publish` (`prepublishOnly` lints,
+runs the BDD suite, builds the CLI to `lib/`, and regenerates
+`manifest.prod.xml`). Users then get the new version via `npx`.

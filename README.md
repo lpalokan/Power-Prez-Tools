@@ -9,7 +9,8 @@ It adds a **Power Prez Tools** group to PowerPoint's **Home** tab:
 - **Paste dimensions and position** — apply both to the selected image.
 - **Paste options** ▾ — _Paste dimensions only_ / _Paste position only_.
 
-Works in PowerPoint for Mac, Windows, and on the web.
+Currently **macOS only** — PowerPoint for Mac (PowerPoint 2019 or later,
+or Microsoft 365). Windows support is in development.
 
 ## Install (for users)
 
@@ -77,28 +78,8 @@ Architecture and the BDD workflow are documented in
 [`docs/testing.md`](docs/testing.md). All capture/paste logic is pure and
 unit-tested; the only PowerPoint-coupled code is a thin Office.js adapter.
 
-## Release (for maintainers)
-
-One-time setup:
-
-1. In the GitHub repo: **Settings → Pages → Build and deployment →
-   Source: GitHub Actions**. Pushing to `main` then deploys the add-in to
-   <https://lpalokan.github.io/Power-Prez-Tools> via
-   `.github/workflows/pages.yml` (the manifest's URLs are rewritten to the
-   Pages URL automatically at build time).
-2. If the repository is ever renamed or moved, update `DEFAULT_BASE_URL`
-   in `tools/make-prod-manifest.mjs` to match the new Pages URL (it is the
-   URL baked into the manifest bundled in the npm package).
-
-To publish the installer CLI:
-
-```
-npm publish
-```
-
-`prepublishOnly` lints, runs the BDD suite, compiles the CLI to `lib/`,
-and generates `manifest.prod.xml` (pointing at the Pages URL) which is
-bundled into the package. Users then get the new version via `npx`.
+Release/publish steps for maintainers live in
+[`docs/testing.md`](docs/testing.md).
 
 ## License
 
