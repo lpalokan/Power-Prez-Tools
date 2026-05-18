@@ -3,6 +3,8 @@ import { FakeShapeGeometryPort } from "./harness";
 import { FakeFileSystem } from "./fakeFileSystem";
 import { MemoryCaptureSlot } from "../../src/core/captureSlot";
 import { CaptureService } from "../../src/core/captureService";
+import { ActionRunner } from "../../src/core/commandHost";
+import { FakeCommandHost } from "./fakeCommandHost";
 
 export class TestWorld extends World {
   readonly port = new FakeShapeGeometryPort();
@@ -10,6 +12,10 @@ export class TestWorld extends World {
   // in the PowerPoint ribbon runtime (which is torn down between clicks).
   readonly slot = new MemoryCaptureSlot();
   service = new CaptureService(this.port, this.slot);
+  // The ribbon host seam (#4): the fake stands in for PowerPoint's
+  // dialog/event/API-gate; ActionRunner is the Office-free glue.
+  readonly host = new FakeCommandHost();
+  runner = new ActionRunner(this.host, this.service);
   lastError: Error | null = null;
 
   // Installer scenario state.
@@ -28,6 +34,7 @@ export class TestWorld extends World {
   /** Simulate the ribbon function-file runtime being torn down and reloaded. */
   restartRuntime(): void {
     this.service = new CaptureService(this.port, this.slot);
+    this.runner = new ActionRunner(this.host, this.service);
   }
 }
 

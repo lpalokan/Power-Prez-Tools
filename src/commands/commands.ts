@@ -1,6 +1,7 @@
 import { OfficeShapeGeometryAdapter } from "../office/officeShapeGeometryAdapter";
 import { LocalStorageCaptureSlot } from "../office/localStorageCaptureSlot";
 import { CaptureService } from "../core/captureService";
+import { ActionRunner, CommandHost } from "../core/commandHost";
 
 /* global Office, location */
 
@@ -20,7 +21,7 @@ function getService(): CaptureService {
 
 let dialog: Office.Dialog | null = null;
 
-function showMessage(message: string): void {
+function showDialog(message: string): void {
   const url = `${location.origin}/dialog.html?msg=${encodeURIComponent(message)}`;
   Office.context.ui.displayDialogAsync(
     url,
@@ -37,45 +38,49 @@ function showMessage(message: string): void {
   );
 }
 
-function ensureSupported(): boolean {
-  if (!Office.context.requirements.isSetSupported("PowerPointApi", "1.4")) {
-    showMessage(
-      "This version of PowerPoint is too old (needs PowerPointApi 1.4). Please update PowerPoint.",
-    );
-    return false;
+/**
+ * The real CommandHost: the only PowerPoint-coupled glue left. The API
+ * gate, error->message mapping and the always-complete guarantee live in
+ * the Office-free ActionRunner; this just speaks Office.js for one event.
+ */
+class OfficeCommandHost implements CommandHost {
+  constructor(private readonly event: Office.AddinCommands.Event) {}
+
+  isSupported(): boolean {
+    return Office.context.requirements.isSetSupported("PowerPointApi", "1.4");
   }
-  return true;
+
+  showMessage(message: string): void {
+    showDialog(message);
+  }
+
+  completeEvent(): void {
+    this.event.completed();
+  }
 }
 
-async function runAction(
+function runAction(
   action: (s: CaptureService) => Promise<void>,
   event: Office.AddinCommands.Event,
-): Promise<void> {
-  try {
-    if (ensureSupported()) {
-      await action(getService());
-    }
-  } catch (e) {
-    showMessage((e as Error).message);
-  } finally {
-    event.completed();
-  }
+): void {
+  const runner = new ActionRunner(new OfficeCommandHost(event), getService());
+  void runner.run(action);
 }
 
 function copy(event: Office.AddinCommands.Event): void {
-  void runAction((s) => s.capture(), event);
+  runAction((s) => s.capture(), event);
 }
 
 function pasteBoth(event: Office.AddinCommands.Event): void {
-  void runAction((s) => s.pasteBoth(), event);
+  runAction((s) => s.pasteBoth(), event);
 }
 
 function pasteDimensions(event: Office.AddinCommands.Event): void {
-  void runAction((s) => s.pasteDimensions(), event);
+  runAction((s) => s.pasteDimensions(), event);
 }
 
 function pastePosition(event: Office.AddinCommands.Event): void {
-  void runAction((s) => s.pastePosition(), event);
+  runAction((s) => s.pastePosition(), event);
 }
 
 Office.onReady(() => {
