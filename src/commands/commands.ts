@@ -1,17 +1,17 @@
 import { OfficeShapeGeometryAdapter } from "../office/officeShapeGeometryAdapter";
+import { LocalStorageCaptureSlotStorage } from "../office/localStorageCaptureSlotStorage";
 import { CaptureStore } from "../core/captureStore";
 import { CaptureService } from "../core/captureService";
 
 /* global Office */
 
-// Module-level singletons. The function-file runtime stays loaded for the
-// PowerPoint session, so the captured slot survives between separate ribbon
-// clicks (Copy on one image, then Paste on another).
-const store = new CaptureStore();
+// The PowerPoint for Mac ribbon runtime is torn down between button clicks,
+// so the capture slot is persisted in localStorage rather than memory.
 let service: CaptureService | null = null;
 
 function getService(): CaptureService {
   if (!service) {
+    const store = new CaptureStore(new LocalStorageCaptureSlotStorage());
     service = new CaptureService(new OfficeShapeGeometryAdapter(), store);
   }
   return service;

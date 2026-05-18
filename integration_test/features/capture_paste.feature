@@ -32,6 +32,14 @@ Feature: Capture and paste shape geometry
     When I paste both
     Then shape "B" is at left 100 top 50 width 200 height 150
 
+  Scenario: Captured value survives the command runtime restarting
+    Given a shape "A" at left 100 top 50 width 200 height 150 is selected
+    And I capture position and dimensions
+    And the command runtime restarts
+    And a shape "B" at left 10 top 10 width 30 height 30 is selected
+    When I paste both
+    Then shape "B" is at left 100 top 50 width 200 height 150
+
   Scenario: Pasting before anything is captured is rejected
     Given a shape "B" at left 10 top 10 width 30 height 30 is selected
     When I paste both

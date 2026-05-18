@@ -19,6 +19,10 @@ Given("no shape is selected", function (this: TestWorld) {
   this.port.select();
 });
 
+Given("the command runtime restarts", function (this: TestWorld) {
+  this.restartRuntime();
+});
+
 Given(
   /^shapes "(.+)" and "(.+)" are both selected$/,
   function (this: TestWorld, a: string, b: string) {

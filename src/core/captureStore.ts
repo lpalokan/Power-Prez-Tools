@@ -1,22 +1,29 @@
 import { Geometry } from "./geometry";
+import { CaptureSlotStorage, MemoryCaptureSlotStorage } from "./captureSlotStorage";
 
-/** A single in-memory capture slot. Cleared when the task pane reloads. */
+/**
+ * A single capture slot. Persistence depends on the injected backend:
+ * memory by default (tests), localStorage in the PowerPoint ribbon runtime
+ * (which is torn down between button clicks on Mac).
+ */
 export class CaptureStore {
-  private slot: Geometry | null = null;
+  constructor(
+    private readonly storage: CaptureSlotStorage = new MemoryCaptureSlotStorage(),
+  ) {}
 
   capture(g: Geometry): void {
-    this.slot = { ...g };
+    this.storage.write({ ...g });
   }
 
   get(): Geometry | null {
-    return this.slot;
+    return this.storage.read();
   }
 
   get isEmpty(): boolean {
-    return this.slot === null;
+    return this.storage.read() === null;
   }
 
   clear(): void {
-    this.slot = null;
+    this.storage.write(null);
   }
 }

@@ -90,6 +90,10 @@ real PowerPoint host:
 
 - `src/office/officeShapeGeometryAdapter.ts` (the `PowerPoint.run` /
   `getSelectedShapes()` calls and real points-based geometry).
+- `src/office/localStorageCaptureSlotStorage.ts` (the `localStorage`
+  persistence that survives the Mac ribbon runtime being torn down between
+  clicks). The persistence behaviour itself is covered in Node by the
+  "command runtime restarting" scenario via `MemoryCaptureSlotStorage`.
 - The ribbon function-file runtime `src/commands/commands.ts`: the
   `Office.actions.associate` wiring, the `isSetSupported("PowerPointApi",
   "1.4")` guard, and the error dialog (`src/dialog/dialog.html`).
@@ -132,7 +136,8 @@ Mac sideload folder, and launches PowerPoint. Then in PowerPoint, on the
    copy/paste with two shapes selected — each should show a clear error
    dialog and leave shapes unchanged.
 
-Note: the captured value is in memory only and clears when PowerPoint
-closes (the function-file runtime persists for the session, so Copy then
-Paste across different images works). Any defect found here must start a
-new BDD loop — add a reproducing scenario before fixing.
+Note: the captured value is persisted in the add-in origin's
+`localStorage`, so Copy then Paste works even though the Mac ribbon
+runtime is torn down between clicks; it also survives a PowerPoint
+restart. Any defect found here must start a new BDD loop — add a
+reproducing scenario before fixing.
