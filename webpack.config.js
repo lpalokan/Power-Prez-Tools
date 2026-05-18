@@ -27,7 +27,11 @@ module.exports = async (env, argv) => {
       new CopyWebpackPlugin({
         patterns: [
           { from: "src/dialog/dialog.html", to: "dialog.html" },
-          { from: "assets", to: "assets" },
+          {
+            from: "assets",
+            to: "assets",
+            globOptions: { ignore: ["**/source/**"] },
+          },
           {
             from: "manifest.xml",
             to: "manifest.xml",

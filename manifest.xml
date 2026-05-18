@@ -11,8 +11,8 @@
   <DefaultLocale>en-US</DefaultLocale>
   <DisplayName DefaultValue="Power Prez Tools" />
   <Description DefaultValue="Copy an image's position and size, then paste it onto another image." />
-  <IconUrl DefaultValue="https://localhost:3000/assets/icon-64.png" />
-  <HighResolutionIconUrl DefaultValue="https://localhost:3000/assets/icon-80.png" />
+  <IconUrl DefaultValue="https://localhost:3000/assets/icon-brand-64.png" />
+  <HighResolutionIconUrl DefaultValue="https://localhost:3000/assets/icon-brand-80.png" />
   <SupportUrl DefaultValue="https://github.com/lpalokan/power-prez-tools" />
   <Hosts>
     <Host Name="Presentation" />
@@ -38,9 +38,9 @@
               <Group id="PPTGroup">
                 <Label resid="Group.Label" />
                 <Icon>
-                  <bt:Image size="16" resid="Icon.16" />
-                  <bt:Image size="32" resid="Icon.32" />
-                  <bt:Image size="80" resid="Icon.80" />
+                  <bt:Image size="16" resid="Brand.16" />
+                  <bt:Image size="32" resid="Brand.32" />
+                  <bt:Image size="80" resid="Brand.80" />
                 </Icon>
                 <Control xsi:type="Button" id="CopyBtn">
                   <Label resid="Copy.Label" />
@@ -49,9 +49,9 @@
                     <Description resid="Copy.Tip" />
                   </Supertip>
                   <Icon>
-                    <bt:Image size="16" resid="Icon.16" />
-                    <bt:Image size="32" resid="Icon.32" />
-                    <bt:Image size="80" resid="Icon.80" />
+                    <bt:Image size="16" resid="Copy.16" />
+                    <bt:Image size="32" resid="Copy.32" />
+                    <bt:Image size="80" resid="Copy.80" />
                   </Icon>
                   <Action xsi:type="ExecuteFunction">
                     <FunctionName>copy</FunctionName>
@@ -64,9 +64,9 @@
                     <Description resid="PasteBoth.Tip" />
                   </Supertip>
                   <Icon>
-                    <bt:Image size="16" resid="Icon.16" />
-                    <bt:Image size="32" resid="Icon.32" />
-                    <bt:Image size="80" resid="Icon.80" />
+                    <bt:Image size="16" resid="PasteBoth.16" />
+                    <bt:Image size="32" resid="PasteBoth.32" />
+                    <bt:Image size="80" resid="PasteBoth.80" />
                   </Icon>
                   <Action xsi:type="ExecuteFunction">
                     <FunctionName>pasteBoth</FunctionName>
@@ -79,9 +79,9 @@
                     <Description resid="PasteMenu.Tip" />
                   </Supertip>
                   <Icon>
-                    <bt:Image size="16" resid="Icon.16" />
-                    <bt:Image size="32" resid="Icon.32" />
-                    <bt:Image size="80" resid="Icon.80" />
+                    <bt:Image size="16" resid="PasteOpts.16" />
+                    <bt:Image size="32" resid="PasteOpts.32" />
+                    <bt:Image size="80" resid="PasteOpts.80" />
                   </Icon>
                   <Items>
                     <Item id="PasteDimItem">
@@ -91,9 +91,9 @@
                         <Description resid="PasteDim.Tip" />
                       </Supertip>
                       <Icon>
-                        <bt:Image size="16" resid="Icon.16" />
-                        <bt:Image size="32" resid="Icon.32" />
-                        <bt:Image size="80" resid="Icon.80" />
+                        <bt:Image size="16" resid="PasteDim.16" />
+                        <bt:Image size="32" resid="PasteDim.32" />
+                        <bt:Image size="80" resid="PasteDim.80" />
                       </Icon>
                       <Action xsi:type="ExecuteFunction">
                         <FunctionName>pasteDimensions</FunctionName>
@@ -106,9 +106,9 @@
                         <Description resid="PastePos.Tip" />
                       </Supertip>
                       <Icon>
-                        <bt:Image size="16" resid="Icon.16" />
-                        <bt:Image size="32" resid="Icon.32" />
-                        <bt:Image size="80" resid="Icon.80" />
+                        <bt:Image size="16" resid="PastePos.16" />
+                        <bt:Image size="32" resid="PastePos.32" />
+                        <bt:Image size="80" resid="PastePos.80" />
                       </Icon>
                       <Action xsi:type="ExecuteFunction">
                         <FunctionName>pastePosition</FunctionName>
@@ -124,9 +124,24 @@
     </Hosts>
     <Resources>
       <bt:Images>
-        <bt:Image id="Icon.16" DefaultValue="https://localhost:3000/assets/icon-32.png" />
-        <bt:Image id="Icon.32" DefaultValue="https://localhost:3000/assets/icon-32.png" />
-        <bt:Image id="Icon.80" DefaultValue="https://localhost:3000/assets/icon-80.png" />
+        <bt:Image id="Brand.16" DefaultValue="https://localhost:3000/assets/icon-brand-16.png" />
+        <bt:Image id="Brand.32" DefaultValue="https://localhost:3000/assets/icon-brand-32.png" />
+        <bt:Image id="Brand.80" DefaultValue="https://localhost:3000/assets/icon-brand-80.png" />
+        <bt:Image id="Copy.16" DefaultValue="https://localhost:3000/assets/icon-copy-16.png" />
+        <bt:Image id="Copy.32" DefaultValue="https://localhost:3000/assets/icon-copy-32.png" />
+        <bt:Image id="Copy.80" DefaultValue="https://localhost:3000/assets/icon-copy-80.png" />
+        <bt:Image id="PasteBoth.16" DefaultValue="https://localhost:3000/assets/icon-pasteboth-16.png" />
+        <bt:Image id="PasteBoth.32" DefaultValue="https://localhost:3000/assets/icon-pasteboth-32.png" />
+        <bt:Image id="PasteBoth.80" DefaultValue="https://localhost:3000/assets/icon-pasteboth-80.png" />
+        <bt:Image id="PasteOpts.16" DefaultValue="https://localhost:3000/assets/icon-pasteopts-16.png" />
+        <bt:Image id="PasteOpts.32" DefaultValue="https://localhost:3000/assets/icon-pasteopts-32.png" />
+        <bt:Image id="PasteOpts.80" DefaultValue="https://localhost:3000/assets/icon-pasteopts-80.png" />
+        <bt:Image id="PasteDim.16" DefaultValue="https://localhost:3000/assets/icon-pastedim-16.png" />
+        <bt:Image id="PasteDim.32" DefaultValue="https://localhost:3000/assets/icon-pastedim-32.png" />
+        <bt:Image id="PasteDim.80" DefaultValue="https://localhost:3000/assets/icon-pastedim-80.png" />
+        <bt:Image id="PastePos.16" DefaultValue="https://localhost:3000/assets/icon-pastepos-16.png" />
+        <bt:Image id="PastePos.32" DefaultValue="https://localhost:3000/assets/icon-pastepos-32.png" />
+        <bt:Image id="PastePos.80" DefaultValue="https://localhost:3000/assets/icon-pastepos-80.png" />
       </bt:Images>
       <bt:Urls>
         <bt:Url id="Commands.Url" DefaultValue="https://localhost:3000/commands.html" />
