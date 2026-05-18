@@ -49,6 +49,13 @@ these interfaces; each has a real adapter and a Cucumber fake:
   error, unsupported host) so the ribbon button never hangs.
   `commands.ts` is now a thin `OfficeCommandHost`. See ADR-0004.
 
+- **Dialog URL** — where the message dialog opens, resolved *relative to
+  the add-in's own page* so the GitHub Pages project base path
+  (`/Power-Prez-Tools/`) is kept. `resolveDialogUrl(baseHref, message)`
+  is a pure core decision; `OfficeCommandHost` only supplies
+  `location.href`. Building it from `location.origin` dropped the base
+  path and 404'd in production. See ADR-0006.
+
 - **Cli / CliEnvironment** — the same treatment for the installer CLI:
   command dispatch, error→message/exit-status mapping, and the
   blocked-install recovery (stage somewhere writable, reveal it, explain)
@@ -59,5 +66,8 @@ these interfaces; each has a real adapter and a Cucumber fake:
 
 `src/office/*` and `src/commands/commands.ts` are the PowerPoint-coupled
 adapters; they are not in the Node test build. Everything they decide has
-been pushed into core seams the Cucumber suite exercises. See
-`docs/testing.md` for the remaining manual-on-Mac checklist.
+been pushed into core seams the Cucumber suite exercises — including the
+dialog URL, after it 404'd in production undetected. `commands.ts` is
+again purely Office.js calls (`displayDialogAsync`, `isSetSupported`,
+`event.completed`). See `docs/testing.md` for the remaining manual-on-Mac
+checklist.

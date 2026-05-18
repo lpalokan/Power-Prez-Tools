@@ -19,6 +19,11 @@ export class TestWorld extends World {
   runner = new ActionRunner(this.host, this.service);
   lastError: Error | null = null;
 
+  // Dialog-URL resolution scenario state: the page the add-in is served
+  // from, and the URL the message dialog would open.
+  addinBaseHref: string | null = null;
+  resolvedDialogUrl: string | null = null;
+
   // Installer scenario state.
   readonly fakeFs = new FakeFileSystem();
   platform = "darwin";

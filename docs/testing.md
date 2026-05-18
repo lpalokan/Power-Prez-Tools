@@ -112,6 +112,9 @@ all capture/paste logic and edge cases with no PowerPoint.
 | `I am shown a message that no shape is selected` | Then |
 | `no message is shown` | Then |
 | `the command signals it is done` | Then |
+| `the add-in is served from "<href>"` | Given |
+| `a "<message>" message needs a dialog` | When |
+| `the dialog opens at "<url>"` | Then |
 | `I run the CLI with "<command>"` | When |
 | `the CLI says the manifest was installed` | Then |
 | `the CLI says nothing was installed` | Then |
@@ -140,8 +143,10 @@ real PowerPoint host:
   `Office.actions.associate` wiring and the Office.js plumbing of
   `OfficeCommandHost` (the `isSetSupported("PowerPointApi", "1.4")` call,
   the `displayDialogAsync` dialog, `event.completed()`). The *decisions*
-  around them — the API gate, error→message mapping, and always-fire
-  completion — are in `ActionRunner` and covered by `commands.feature`.
+  around them — the API gate, error→message mapping, always-fire
+  completion, and the dialog URL (`resolveDialogUrl`, after it 404'd in
+  production) — are in core and covered by `commands.feature`; only the
+  `displayDialogAsync` call itself is Mac-only.
 - Live manifest load (`VersionOverrides` ribbon controls) and the
   `ReadWriteDocument` permission grant.
 
