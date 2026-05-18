@@ -5,6 +5,7 @@ import { MemoryCaptureSlot } from "../../src/core/captureSlot";
 import { CaptureService } from "../../src/core/captureService";
 import { ActionRunner } from "../../src/core/commandHost";
 import { FakeCommandHost } from "./fakeCommandHost";
+import { FakeCliEnvironment } from "./fakeCliEnvironment";
 
 export class TestWorld extends World {
   readonly port = new FakeShapeGeometryPort();
@@ -26,6 +27,9 @@ export class TestWorld extends World {
   uninstalled: boolean | null = null;
   tmpDir = "/tmp";
   downloadsExists = false;
+  // The CLI runner seam (#4): the fake reads platform/home/tmp/Downloads
+  // from this World, so existing installer Given steps drive it too.
+  readonly cliEnv = new FakeCliEnvironment(this);
 
   constructor(options: IWorldOptions) {
     super(options);

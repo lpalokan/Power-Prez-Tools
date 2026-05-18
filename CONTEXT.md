@@ -38,6 +38,7 @@ these interfaces; each has a real adapter and a Cucumber fake:
 | `CaptureSlot` | the capture slot | `LocalStorageCaptureSlot` | `MemoryCaptureSlot` |
 | `CommandHost` | the ribbon host (API gate, message, event done) | `OfficeCommandHost` | `FakeCommandHost` |
 | `FileSystemPort` | installer filesystem | `NodeFileSystem` | `FakeFileSystem` |
+| `CliEnvironment` | the CLI's outside world (stdout/exit/staging/reveal) | `NodeCliEnvironment` | `FakeCliEnvironment` |
 
 - **CaptureService** — all capture/paste decision logic, behind
   `ShapeGeometryPort` + `CaptureSlot`. Zero Office.js.
@@ -47,6 +48,12 @@ these interfaces; each has a real adapter and a Cucumber fake:
   the guarantee that `completeEvent()` fires on every path (success,
   error, unsupported host) so the ribbon button never hangs.
   `commands.ts` is now a thin `OfficeCommandHost`. See ADR-0004.
+
+- **Cli / CliEnvironment** — the same treatment for the installer CLI:
+  command dispatch, error→message/exit-status mapping, and the
+  blocked-install recovery (stage somewhere writable, reveal it, explain)
+  lifted out of `cli/main.ts` into a testable `Cli`. `main.ts` is now a
+  thin wire-up of `NodeCliEnvironment` + `NodeFileSystem`. See ADR-0005.
 
 ## Where things can only be verified by hand
 

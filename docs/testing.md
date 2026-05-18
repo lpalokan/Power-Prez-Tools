@@ -13,12 +13,18 @@ integration_test/
   features/
     capture_paste.feature          capture/paste scenarios (source of truth)
     commands.feature               ribbon-host scenarios (source of truth)
+    cli.feature                    installer-CLI scenarios (source of truth)
+    installer.feature              installer pure-logic scenarios
     step/capture_paste.steps.ts    capture/paste step definitions
     step/commands.steps.ts         ribbon-host step definitions
+    step/cli.steps.ts              installer-CLI step definitions
+    step/installer.steps.ts        installer pure-logic step definitions
   support/
     world.ts                       Cucumber World (wires service + fakes)
     harness.ts                     FakeShapeGeometryPort (in-memory)
     fakeCommandHost.ts             FakeCommandHost (records host calls)
+    fakeCliEnvironment.ts          FakeCliEnvironment (records CLI effects)
+    fakeFileSystem.ts              FakeFileSystem (installer fs)
 ```
 
 Domain vocabulary used across code, tests, and Gherkin is defined in
@@ -39,6 +45,12 @@ seam has a real adapter and a Cucumber fake (see `CONTEXT.md`):
   (`support/fakeCommandHost.ts`) vs `OfficeCommandHost`
   (`src/commands/commands.ts`). The API gate, error→message mapping and
   always-fire `completeEvent` are in the Office-free `ActionRunner`.
+- `CliEnvironment` (`src/cli/cli.ts`) — `FakeCliEnvironment`
+  (`support/fakeCliEnvironment.ts`) vs `NodeCliEnvironment`
+  (`src/cli/`). Command dispatch, error→message/exit mapping and the
+  blocked-install stage→reveal→explain recovery are in the pure `Cli`;
+  `main.ts` is a thin wire-up. `FileSystemPort` (`src/cli/installer.ts`)
+  is the installer's own seam (`NodeFileSystem` vs `FakeFileSystem`).
 
 **Contract wording:** `SelectionError` ("No shape selected." / "Select
 exactly one shape.") now has one home, `requireExactlyOne`, called by
@@ -100,6 +112,16 @@ all capture/paste logic and edge cases with no PowerPoint.
 | `I am shown a message that no shape is selected` | Then |
 | `no message is shown` | Then |
 | `the command signals it is done` | Then |
+| `I run the CLI with "<command>"` | When |
+| `the CLI says the manifest was installed` | Then |
+| `the CLI says nothing was installed` | Then |
+| `the CLI prints usage help` | Then |
+| `the CLI says the platform is unsupported` | Then |
+| `the CLI exits successfully` | Then |
+| `the CLI exits with a failure` | Then |
+| `the CLI staged the manifest where the user can reach it` | Then |
+| `the CLI revealed the staged manifest` | Then |
+| `the CLI explains the macOS permission restriction` | Then |
 
 ## What only a Mac (with PowerPoint) can verify
 
@@ -172,10 +194,12 @@ The add-in's static files are hosted on GitHub Pages (deployed by
 `.github/workflows/pages.yml`); the npm CLI only copies the production
 manifest into PowerPoint's sideload folder. The installer's pure logic
 (`src/cli/installer.ts`, path resolution + copy/remove behind a
-`FileSystemPort`) is covered by `integration_test/features/installer.feature`
-using an in-memory filesystem; the Node `fs` adapter
-(`src/cli/nodeFileSystem.ts`) is the only untestable boundary, mirroring
-the Office.js seam.
+`FileSystemPort`) is covered by `installer.feature`, and the CLI
+orchestration around it (`src/cli/cli.ts` — command dispatch, error→
+message/exit mapping, the blocked-install stage→reveal→explain recovery)
+by `cli.feature`, both using in-memory fakes. The Node adapters
+(`nodeFileSystem.ts`, `nodeCliEnvironment.ts`) are the only untestable
+boundary, mirroring the Office.js seam; `main.ts` is a thin wire-up.
 
 ## Releasing (maintainers)
 
