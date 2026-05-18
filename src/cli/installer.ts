@@ -1,4 +1,4 @@
-/** Pure install logic. The filesystem is injected so it is testable. */
+/** Pure install logic. Filesystem and registry are injected so it is testable. */
 
 export type Platform = "darwin" | "win32" | string;
 
@@ -8,6 +8,13 @@ export interface FileSystemPort {
   mkdirp(path: string): void;
   copy(source: string, destination: string): void;
   remove(path: string): void;
+}
+
+/** Minimal Windows registry surface (used only on win32). */
+export interface RegistryPort {
+  set(keyPath: string, name: string, data: string): void;
+  has(keyPath: string, name: string): boolean;
+  delete(keyPath: string, name: string): void;
 }
 
 export class UnsupportedPlatformError extends Error {}
@@ -42,6 +49,11 @@ export function isPermissionError(e: unknown): boolean {
 /** Filename the manifest is installed as (kept stable for clean uninstalls). */
 export const MANIFEST_FILENAME = "power-prez-tools.manifest.xml";
 
+/** Windows per-user developer sideload registry key and value name. */
+export const WIN_DEVELOPER_KEY =
+  "HKCU\\Software\\Microsoft\\Office\\16.0\\WEF\\Developer";
+export const WIN_VALUE_NAME = "PowerPrezTools";
+
 /** A writable place to drop the manifest when the wef folder is blocked. */
 export function fallbackStagePath(
   home: string,
@@ -53,7 +65,7 @@ export function fallbackStagePath(
     : `${tmpDir}/${MANIFEST_FILENAME}`;
 }
 
-/** Step-by-step manual install instructions for the blocked case. */
+/** Step-by-step manual install instructions for the macOS-blocked case. */
 export function manualInstallSteps(wefDir: string, stagedManifest: string): string {
   return [
     "To finish the install without changing any system settings:",
@@ -62,7 +74,7 @@ export function manualInstallSteps(wefDir: string, stagedManifest: string): stri
     "  2. In Finder press Cmd+Shift+G and go to:",
     `       ${wefDir.slice(0, wefDir.lastIndexOf("/"))}`,
     '  3. Create a folder named "wef" there if it does not exist.',
-    `  4. Move the saved manifest into that "wef" folder.`,
+    '  4. Move the saved manifest into that "wef" folder.',
     "  5. Fully quit PowerPoint (Cmd+Q) and reopen it.",
     "",
     "Alternatively, grant your terminal Full Disk Access (System Settings →",
@@ -71,16 +83,30 @@ export function manualInstallSteps(wefDir: string, stagedManifest: string): stri
   ].join("\n");
 }
 
-/** The folder PowerPoint reads sideloaded add-in manifests from. */
-export function wefDir(platform: Platform, home: string): string {
+/** macOS folder PowerPoint reads sideloaded add-in manifests from. */
+export function macWefDir(home: string): string {
+  return `${home}/Library/Containers/com.microsoft.Powerpoint/Data/Documents/wef`;
+}
+
+/** Windows folder where we keep the manifest the registry points at. */
+export function winManifestDir(home: string): string {
+  return `${home}\\AppData\\Local\\PowerPrezTools`;
+}
+
+export function winManifestPath(home: string): string {
+  return `${winManifestDir(home)}\\${MANIFEST_FILENAME}`;
+}
+
+/** The add-in folder for "resolve" — macOS/Windows only, else unsupported. */
+export function addinFolder(platform: Platform, home: string): string {
   switch (platform) {
     case "darwin":
-      return `${home}/Library/Containers/com.microsoft.Powerpoint/Data/Documents/wef`;
+      return macWefDir(home);
     case "win32":
-      return `${home}\\AppData\\Local\\Microsoft\\Office\\16.0\\Wef`;
+      return winManifestDir(home);
     default:
       throw new UnsupportedPlatformError(
-        `Unsupported platform "${platform}". Power Prez Tools can be installed automatically on macOS and Windows; on other systems copy the manifest into PowerPoint's wef folder manually.`,
+        `Unsupported platform "${platform}". Power Prez Tools can be installed automatically on macOS and Windows; on other systems copy the manifest into PowerPoint's add-in folder manually.`,
       );
   }
 }
@@ -88,20 +114,61 @@ export function wefDir(platform: Platform, home: string): string {
 export class Installer {
   constructor(
     private readonly fs: FileSystemPort,
+    private readonly registry: RegistryPort,
     private readonly platform: Platform,
     private readonly home: string,
   ) {}
 
   /** Absolute path the manifest is (or would be) installed to. */
   targetPath(): string {
-    const dir = wefDir(this.platform, this.home);
-    const sep = this.platform === "win32" ? "\\" : "/";
-    return `${dir}${sep}${MANIFEST_FILENAME}`;
+    switch (this.platform) {
+      case "darwin":
+        return `${macWefDir(this.home)}/${MANIFEST_FILENAME}`;
+      case "win32":
+        return winManifestPath(this.home);
+      default:
+        return addinFolder(this.platform, this.home); // throws
+    }
   }
 
-  /** Copy the manifest into the wef folder, creating it if needed. */
+  /** Register the add-in with PowerPoint. Returns the manifest's path. */
   install(manifestSource: string): string {
-    const dir = wefDir(this.platform, this.home);
+    switch (this.platform) {
+      case "darwin":
+        return this.installMac(manifestSource);
+      case "win32":
+        return this.installWindows(manifestSource);
+      default:
+        return addinFolder(this.platform, this.home); // throws Unsupported
+    }
+  }
+
+  /** Remove a previous install. Returns whether one existed. */
+  uninstall(): boolean {
+    switch (this.platform) {
+      case "darwin": {
+        const target = this.targetPath();
+        if (!this.fs.exists(target)) return false;
+        this.fs.remove(target);
+        return true;
+      }
+      case "win32": {
+        const existed =
+          this.registry.has(WIN_DEVELOPER_KEY, WIN_VALUE_NAME) ||
+          this.fs.exists(winManifestPath(this.home));
+        this.registry.delete(WIN_DEVELOPER_KEY, WIN_VALUE_NAME);
+        if (this.fs.exists(winManifestPath(this.home))) {
+          this.fs.remove(winManifestPath(this.home));
+        }
+        return existed;
+      }
+      default:
+        return Boolean(addinFolder(this.platform, this.home)); // throws
+    }
+  }
+
+  private installMac(manifestSource: string): string {
+    const dir = macWefDir(this.home);
     try {
       if (!this.fs.exists(dir)) this.fs.mkdirp(dir);
       const target = this.targetPath();
@@ -115,11 +182,12 @@ export class Installer {
     }
   }
 
-  /** Remove a previously installed manifest. Returns whether one existed. */
-  uninstall(): boolean {
-    const target = this.targetPath();
-    if (!this.fs.exists(target)) return false;
-    this.fs.remove(target);
-    return true;
+  private installWindows(manifestSource: string): string {
+    const dir = winManifestDir(this.home);
+    if (!this.fs.exists(dir)) this.fs.mkdirp(dir);
+    const target = winManifestPath(this.home);
+    this.fs.copy(manifestSource, target);
+    this.registry.set(WIN_DEVELOPER_KEY, WIN_VALUE_NAME, target);
+    return target;
   }
 }

@@ -2,6 +2,7 @@ import * as path from "path";
 import {
   Installer,
   FileSystemPort,
+  RegistryPort,
   UnsupportedPlatformError,
   PermissionDeniedError,
   fallbackStagePath,
@@ -54,11 +55,17 @@ export class Cli {
   constructor(
     private readonly env: CliEnvironment,
     private readonly fs: FileSystemPort,
+    private readonly registry: RegistryPort,
   ) {}
 
   run(argv: string[]): void {
     const command = (argv[0] ?? "help").toLowerCase();
-    const installer = new Installer(this.fs, this.env.platform, this.env.home);
+    const installer = new Installer(
+      this.fs,
+      this.registry,
+      this.env.platform,
+      this.env.home,
+    );
 
     try {
       switch (command) {

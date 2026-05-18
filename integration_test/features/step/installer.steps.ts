@@ -3,13 +3,21 @@ import * as assert from "assert";
 import { TestWorld } from "../../support/world";
 import {
   Installer,
-  wefDir,
+  addinFolder,
   PermissionDeniedError,
   fallbackStagePath,
+  winManifestPath,
+  WIN_DEVELOPER_KEY,
+  WIN_VALUE_NAME,
 } from "../../../src/cli/installer";
 
 function installer(world: TestWorld): Installer {
-  return new Installer(world.fakeFs, world.platform, world.home);
+  return new Installer(
+    world.fakeFs,
+    world.fakeRegistry,
+    world.platform,
+    world.home,
+  );
 }
 
 Given(
@@ -22,7 +30,7 @@ Given(
 
 Given("the add-in folder does not exist", function (this: TestWorld) {
   // FakeFileSystem starts empty; nothing to do. Documents intent.
-  assert.ok(!this.fakeFs.exists(wefDir(this.platform, this.home)));
+  assert.ok(!this.fakeFs.exists(addinFolder(this.platform, this.home)));
 });
 
 Given(
@@ -34,7 +42,7 @@ Given(
 
 When("I resolve the add-in folder", function (this: TestWorld) {
   try {
-    this.resolvedDir = wefDir(this.platform, this.home);
+    this.resolvedDir = addinFolder(this.platform, this.home);
   } catch (e) {
     this.lastError = e as Error;
   }
@@ -59,7 +67,7 @@ Then(
 );
 
 Then("the add-in folder is created", function (this: TestWorld) {
-  assert.ok(this.fakeFs.dirs.has(wefDir(this.platform, this.home)));
+  assert.ok(this.fakeFs.dirs.has(addinFolder(this.platform, this.home)));
 });
 
 Then(
@@ -140,3 +148,17 @@ Then(
     assert.strictEqual(staged, expected);
   },
 );
+
+Then(
+  "PowerPoint is told to load that manifest via the developer registry",
+  function (this: TestWorld) {
+    assert.strictEqual(
+      this.fakeRegistry.values.get(`${WIN_DEVELOPER_KEY}::${WIN_VALUE_NAME}`),
+      winManifestPath(this.home),
+    );
+  },
+);
+
+Then("the developer registry entry is gone", function (this: TestWorld) {
+  assert.ok(!this.fakeRegistry.has(WIN_DEVELOPER_KEY, WIN_VALUE_NAME));
+});

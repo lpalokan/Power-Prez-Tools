@@ -13,7 +13,7 @@ function err(world: TestWorld): string {
 }
 
 When(/^I run the CLI with "(.+)"$/, function (this: TestWorld, command: string) {
-  new Cli(this.cliEnv, this.fakeFs).run([command]);
+  new Cli(this.cliEnv, this.fakeFs, this.fakeRegistry).run([command]);
 });
 
 Then("the CLI says the manifest was installed", function (this: TestWorld) {

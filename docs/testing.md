@@ -196,15 +196,22 @@ reproducing scenario before fixing.
 
 End users install via `npx power-prez-tools install` (see the README).
 The add-in's static files are hosted on GitHub Pages (deployed by
-`.github/workflows/pages.yml`); the npm CLI only copies the production
-manifest into PowerPoint's sideload folder. The installer's pure logic
-(`src/cli/installer.ts`, path resolution + copy/remove behind a
-`FileSystemPort`) is covered by `installer.feature`, and the CLI
+`.github/workflows/pages.yml`); the npm CLI only registers the
+production manifest with PowerPoint. On **macOS** it copies the manifest
+into the sandbox `wef` folder (with a guided Finder fallback when macOS
+blocks that). On **Windows** it stores the manifest under
+`%LOCALAPPDATA%` and points the per-user `HKCU\…\WEF\Developer` registry
+value at it.
+
+The installer's pure logic (`src/cli/installer.ts` — path resolution,
+copy/remove, registry decisions — behind `FileSystemPort` and
+`RegistryPort`) is covered by `installer.feature`, and the CLI
 orchestration around it (`src/cli/cli.ts` — command dispatch, error→
 message/exit mapping, the blocked-install stage→reveal→explain recovery)
 by `cli.feature`, both using in-memory fakes. The Node adapters
-(`nodeFileSystem.ts`, `nodeCliEnvironment.ts`) are the only untestable
-boundary, mirroring the Office.js seam; `main.ts` is a thin wire-up.
+(`nodeFileSystem.ts`, `nodeCliEnvironment.ts`) and the `reg.exe` adapter
+(`windowsRegistry.ts`) are the only untestable boundary, mirroring the
+Office.js seam; `main.ts` is a thin wire-up.
 
 ## Releasing (maintainers)
 

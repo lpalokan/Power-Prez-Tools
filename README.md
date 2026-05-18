@@ -21,8 +21,14 @@ You need [Node.js](https://nodejs.org) 18+ and PowerPoint 2019 or later
 npx power-prez-tools install
 ```
 
-Fully quit PowerPoint (Cmd+Q on Mac) and reopen it. The buttons appear on
-the **Home** tab in the **Power Prez Tools** group.
+Fully quit PowerPoint (Cmd+Q on Mac, or close all windows on Windows) and
+reopen it. The buttons appear on the **Home** tab in the **Power Prez
+Tools** group.
+
+Works on **macOS and Windows**. On macOS the manifest is placed in
+PowerPoint's add-in folder; on Windows it is registered via the per-user
+developer registry entry. `npx power-prez-tools uninstall` reverses
+either.
 
 That's it — there's nothing to host or configure. The add-in's code is
 served from GitHub Pages; the command above just registers it with
