@@ -1,0 +1,14 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "module": "CommonJS",
+    "moduleResolution": "node",
+    "lib": ["ES2019"],
+    "types": ["node"],
+    "rootDir": "src",
+    "outDir": "lib",
+    "sourceMap": false
+  },
+  "include": ["src/cli/**/*.ts"],
+  "exclude": []
+}

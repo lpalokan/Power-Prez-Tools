@@ -1,0 +1,33 @@
+Feature: Install the add-in into PowerPoint
+  As someone who wants to use Power Prez Tools
+  I want a single command to register the add-in
+  So that I can enable it in PowerPoint without manual file copying
+
+  Scenario: Resolve the PowerPoint add-in folder on macOS
+    Given the platform is "darwin" and the home directory is "/Users/jo"
+    When I resolve the add-in folder
+    Then the add-in folder is "/Users/jo/Library/Containers/com.microsoft.Powerpoint/Data/Documents/wef"
+
+  Scenario: Install copies the manifest, creating the folder when missing
+    Given the platform is "darwin" and the home directory is "/Users/jo"
+    And the add-in folder does not exist
+    When I install the manifest from "/pkg/manifest.prod.xml"
+    Then the add-in folder is created
+    And the manifest is written to "/Users/jo/Library/Containers/com.microsoft.Powerpoint/Data/Documents/wef/power-prez-tools.manifest.xml"
+
+  Scenario: Uninstall removes a previously installed manifest
+    Given the platform is "darwin" and the home directory is "/Users/jo"
+    And the manifest is already installed from "/pkg/manifest.prod.xml"
+    When I uninstall
+    Then the manifest is no longer installed
+    And uninstall reports that it was removed
+
+  Scenario: Uninstall is harmless when nothing is installed
+    Given the platform is "darwin" and the home directory is "/Users/jo"
+    When I uninstall
+    Then uninstall reports that nothing was installed
+
+  Scenario: An unsupported platform is rejected with a clear message
+    Given the platform is "freebsd" and the home directory is "/home/jo"
+    When I resolve the add-in folder
+    Then I am told the platform is unsupported

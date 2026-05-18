@@ -1,0 +1,58 @@
+{
+  "name": "power-prez-tools",
+  "version": "1.0.0",
+  "description": "PowerPoint add-in: copy an image's position/size and paste it onto another image.",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/lpalokan/Power-Prez-Tools.git"
+  },
+  "bin": {
+    "power-prez-tools": "bin/power-prez-tools.js"
+  },
+  "files": [
+    "bin/",
+    "lib/",
+    "manifest.prod.xml",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "build": "webpack --mode production",
+    "build:dev": "webpack --mode development",
+    "build:cli": "tsc -p tsconfig.cli.json",
+    "manifest:prod": "node tools/make-prod-manifest.mjs",
+    "dev-server": "webpack serve --mode development",
+    "start": "office-addin-debugging start manifest.xml",
+    "stop": "office-addin-debugging stop manifest.xml",
+    "validate": "office-addin-manifest validate manifest.xml",
+    "lint": "eslint . --ext .ts",
+    "lint:fix": "eslint . --ext .ts --fix",
+    "test": "cross-env TS_NODE_PROJECT=tsconfig.test.json cucumber-js",
+    "test:watch": "cross-env TS_NODE_PROJECT=tsconfig.test.json cucumber-js --watch",
+    "prepublishOnly": "npm run lint && npm test && npm run build:cli && npm run manifest:prod"
+  },
+  "devDependencies": {
+    "@cucumber/cucumber": "^10.9.0",
+    "@types/node": "^20.14.0",
+    "@types/office-js": "^1.0.377",
+    "@typescript-eslint/eslint-plugin": "^7.13.0",
+    "@typescript-eslint/parser": "^7.13.0",
+    "copy-webpack-plugin": "^11.0.0",
+    "cross-env": "^7.0.3",
+    "eslint": "^8.57.0",
+    "html-webpack-plugin": "^5.6.0",
+    "office-addin-debugging": "^5.1.6",
+    "office-addin-dev-certs": "^1.13.5",
+    "office-addin-manifest": "^1.13.6",
+    "ts-loader": "^9.5.1",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.4.5",
+    "webpack": "^5.92.0",
+    "webpack-cli": "^5.1.4",
+    "webpack-dev-server": "^4.15.2"
+  }
+}

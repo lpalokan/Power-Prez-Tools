@@ -1,0 +1,7 @@
+node_modules/
+dist/
+lib/
+manifest.prod.xml
+*.log
+.DS_Store
+*.tgz
