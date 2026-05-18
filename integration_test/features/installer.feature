@@ -32,6 +32,20 @@ Feature: Install the add-in into PowerPoint
     When I resolve the add-in folder
     Then I am told the platform is unsupported
 
+  Scenario: Install on Windows stores the manifest and registers it
+    Given the platform is "win32" and the home directory is "C:\Users\jo"
+    When I install the manifest from "/pkg/manifest.prod.xml"
+    Then the manifest is written to "C:\Users\jo\AppData\Local\PowerPrezTools\power-prez-tools.manifest.xml"
+    And PowerPoint is told to load that manifest via the developer registry
+
+  Scenario: Uninstall on Windows clears the registry entry and stored manifest
+    Given the platform is "win32" and the home directory is "C:\Users\jo"
+    And the manifest is already installed from "/pkg/manifest.prod.xml"
+    When I uninstall
+    Then the developer registry entry is gone
+    And the manifest is no longer installed
+    And uninstall reports that it was removed
+
   Scenario: A macOS-blocked install is explained, not dumped as a raw error
     Given the platform is "darwin" and the home directory is "/Users/jo"
     And creating the add-in folder is blocked by the system

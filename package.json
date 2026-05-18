@@ -1,11 +1,11 @@
 {
   "name": "power-prez-tools",
-  "version": "1.0.3",
+  "version": "1.1.0-beta.0",
   "description": "PowerPoint add-in: copy an image's position/size and paste it onto another image.",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/lpalokan/Power-Prez-Tools.git"
+    "url": "git+https://github.com/lpalokan/Power-Prez-Tools.git"
   },
   "bin": {
     "power-prez-tools": "bin/power-prez-tools.js"
@@ -33,6 +33,7 @@
     "lint:fix": "eslint . --ext .ts --fix",
     "test": "cross-env TS_NODE_PROJECT=tsconfig.test.json cucumber-js",
     "test:watch": "cross-env TS_NODE_PROJECT=tsconfig.test.json cucumber-js --watch",
+    "publish:beta": "npm publish --tag beta",
     "prepublishOnly": "npm run lint && npm test && npm run build:cli && npm run manifest:prod"
   },
   "devDependencies": {

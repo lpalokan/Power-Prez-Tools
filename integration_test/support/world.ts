@@ -1,6 +1,7 @@
 import { setWorldConstructor, World, IWorldOptions } from "@cucumber/cucumber";
 import { FakeShapeGeometryPort } from "./harness";
 import { FakeFileSystem } from "./fakeFileSystem";
+import { FakeRegistry } from "./fakeRegistry";
 import { MemoryCaptureSlot } from "../../src/core/captureSlot";
 import { CaptureService } from "../../src/core/captureService";
 import { ActionRunner } from "../../src/core/commandHost";
@@ -26,6 +27,7 @@ export class TestWorld extends World {
 
   // Installer scenario state.
   readonly fakeFs = new FakeFileSystem();
+  readonly fakeRegistry = new FakeRegistry();
   platform = "darwin";
   home = "/Users/jo";
   resolvedDir: string | null = null;
