@@ -20,6 +20,8 @@ export class TestWorld extends World {
   home = "/Users/jo";
   resolvedDir: string | null = null;
   uninstalled: boolean | null = null;
+  tmpDir = "/tmp";
+  downloadsExists = false;
 
   constructor(options: IWorldOptions) {
     super(options);

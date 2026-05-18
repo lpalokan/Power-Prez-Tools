@@ -31,3 +31,20 @@ Feature: Install the add-in into PowerPoint
     Given the platform is "freebsd" and the home directory is "/home/jo"
     When I resolve the add-in folder
     Then I am told the platform is unsupported
+
+  Scenario: A macOS-blocked install is explained, not dumped as a raw error
+    Given the platform is "darwin" and the home directory is "/Users/jo"
+    And creating the add-in folder is blocked by the system
+    When I try to install the manifest from "/pkg/manifest.prod.xml"
+    Then I am told it is a macOS permission restriction
+    And the reported add-in folder is "/Users/jo/Library/Containers/com.microsoft.Powerpoint/Data/Documents/wef"
+
+  Scenario Outline: The blocked-install fallback stages the manifest somewhere writable
+    Given the home directory is "/Users/jo" and the temp directory is "/tmp"
+    And Downloads <downloads>
+    Then the manifest is staged to "<staged>"
+
+    Examples:
+      | downloads  | staged                                            |
+      | exists     | /Users/jo/Downloads/power-prez-tools.manifest.xml |
+      | is missing | /tmp/power-prez-tools.manifest.xml                |

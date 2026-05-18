@@ -56,6 +56,13 @@ Then restart PowerPoint.
   loads its code from GitHub Pages.
 - **Older PowerPoint:** the add-in requires the PowerPoint JavaScript API
   1.4. Very old builds show a "too old" message — update PowerPoint.
+- **"EPERM / operation not permitted" during install:** macOS blocks
+  command-line tools from writing into PowerPoint's protected folder. The
+  installer detects this and prints step-by-step manual instructions (it
+  saves the manifest to your Downloads and opens Finder at the right
+  place — just create a `wef` folder and drop the file in). Alternatively,
+  grant your terminal **Full Disk Access** (System Settings → Privacy &
+  Security → Full Disk Access), reopen it, and re-run the install.
 
 ## Develop
 

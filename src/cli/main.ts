@@ -1,6 +1,14 @@
 import * as os from "os";
 import * as path from "path";
-import { Installer, UnsupportedPlatformError } from "./installer";
+import * as fs from "fs";
+import { spawnSync } from "child_process";
+import {
+  Installer,
+  UnsupportedPlatformError,
+  PermissionDeniedError,
+  fallbackStagePath,
+  manualInstallSteps,
+} from "./installer";
 import { NodeFileSystem } from "./nodeFileSystem";
 
 const HELP = `Power Prez Tools - PowerPoint add-in installer
@@ -54,9 +62,44 @@ export function run(argv: string[]): void {
   } catch (e) {
     if (e instanceof UnsupportedPlatformError) {
       console.error(e.message);
+    } else if (e instanceof PermissionDeniedError) {
+      const staged = stageForManualInstall(e.manifestSource);
+      revealInFinder(staged, path.dirname(e.wefDir));
+      console.error(e.message);
+      console.error("\n" + manualInstallSteps(e.wefDir, staged));
     } else {
       console.error(`Failed to ${command}: ${(e as Error).message}`);
     }
     process.exitCode = 1;
+  }
+}
+
+/** Copy the bundled manifest somewhere the user can reach without FDA. */
+function stageForManualInstall(manifestSource: string): string {
+  const home = os.homedir();
+  const downloadsExists = fs.existsSync(path.join(home, "Downloads"));
+  const staged = fallbackStagePath(home, os.tmpdir(), downloadsExists);
+  try {
+    fs.copyFileSync(manifestSource, staged);
+  } catch {
+    return manifestSource;
+  }
+  return staged;
+}
+
+/** Best-effort: show the staged manifest and the target folder in Finder. */
+function revealInFinder(stagedManifest: string, containerDir: string): void {
+  if (process.platform !== "darwin") return;
+  try {
+    spawnSync("open", ["-R", stagedManifest], { stdio: "ignore" });
+  } catch {
+    /* ignore */
+  }
+  try {
+    if (fs.existsSync(containerDir)) {
+      spawnSync("open", [containerDir], { stdio: "ignore" });
+    }
+  } catch {
+    /* ignore */
   }
 }
